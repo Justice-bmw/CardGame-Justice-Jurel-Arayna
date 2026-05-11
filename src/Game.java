@@ -26,7 +26,8 @@ public class Game {
     // --------- Game Objects --------- //
 
     private ArrayList<Player> players;
-    private ArrayList<Card> mixedDeck; // contains a mix of all types of cards
+    private ArrayList<Card> deck;
+    private ArrayList<ActionCard> mixedDeck; // contains a mix of all types of cards
     private ArrayList<DealsDamage> damageDeck; // contains only cards that implement DealsDamage
 
     // ------ End of Game Objects ----- //
@@ -39,8 +40,9 @@ public class Game {
 
         // Game objects
         players = new ArrayList<Player>();
-        mixedDeck = new ArrayList<Card>();
-        damageDeck = new ArrayList<DealsDamage>();
+        deck = new ArrayList<Card>();
+        // mixedDeck = new ArrayList<ActionCard>();
+        // damageDeck = new ArrayList<DealsDamage>();
 
         // Generate the decks
         generateDecks();
@@ -50,6 +52,22 @@ public class Game {
         players.add(player);
     }
 
+    public ArrayList<ActionCard> getMixedDeck() {
+        return mixedDeck;
+    }
+
+    public ArrayList<DealsDamage> getDamageDeck() {
+        return damageDeck;
+    }
+
+    public ArrayList<Card> getDeck() {
+        return deck;
+    }
+
+    public int getDeckCount() {
+        return deck.size();
+    }
+
     public void run() {
 
         // deal cards to each player
@@ -57,7 +75,7 @@ public class Game {
         while (cardsAdded < startingHandSize) {
             for (int i = 0; i < players.size(); i++) {
                 int randomCardIndex = Rand.randomInt(0, mixedDeck.size());
-                Card randomCard = mixedDeck.get(randomCardIndex);
+                ActionCard randomCard = mixedDeck.get(randomCardIndex);
                 mixedDeck.remove(randomCardIndex);
                 players.get(i).addCardToHand(randomCard);
             }
@@ -103,7 +121,7 @@ public class Game {
             // 2. OR draw a card from mixed deck (but don't play it yet)
             else if (damageDeck.size() == 0 || (mixedDeck.size() > 0 && randomValue < playerChancesOfPlayingCard + playerChancesOfDrawingFromMixedDeck)) {
                 Object drawnObject = drawRandomCard(mixedDeck);
-                Card drawnCard = (Card)drawnObject;
+                ActionCard drawnCard = (ActionCard)drawnObject;
                 currentPlayer.addCardToHand(drawnCard);
 
                 System.out.println(currentPlayer.getName() + " drew a " + drawnCard + " from the Mixed deck.");
@@ -186,34 +204,40 @@ public class Game {
 
             // % chance of creating a point card
             if (randomValue < pointCardChances) {
-                mixedDeck.add(new PointCard());
+                // mixedDeck.add(new PointCard());
+                deck.add(new PointCard());
             }
 
             // % chance of creating an attack card
             else if (randomValue < pointCardChances + attackCardChances) {
                 AttackCard newAttackCard = new AttackCard();
 
-                if (Rand.random() < chancesOfDamageCardBeingInDamageDeck) {
-                    damageDeck.add(newAttackCard);
-                } else {
-                    mixedDeck.add(newAttackCard);
-                }
+                // if (Rand.random() < chancesOfDamageCardBeingInDamageDeck) {
+                //     damageDeck.add(newAttackCard);
+                // } else {
+                //     mixedDeck.add(newAttackCard);
+                // }
+
+                deck.add(newAttackCard);
             }
 
             // % chance of creating a freeze card
             else if (randomValue < pointCardChances + attackCardChances + freezeCardChances) {
                 FreezeCard newFreezeCard = new FreezeCard();
 
-                if (Rand.random() < chancesOfDamageCardBeingInDamageDeck) {
-                    damageDeck.add(newFreezeCard);
-                } else {
-                    mixedDeck.add(newFreezeCard);
-                }
+                // if (Rand.random() < chancesOfDamageCardBeingInDamageDeck) {
+                //     damageDeck.add(newFreezeCard);
+                // } else {
+                //     mixedDeck.add(newFreezeCard);
+                // }
+
+                deck.add(newFreezeCard);
             }
 
             // % chance of creating a thief card
             else {
-                mixedDeck.add(new ThiefCard());
+                // mixedDeck.add(new ThiefCard());
+                deck.add(new ThiefCard());
             }
         }
     }

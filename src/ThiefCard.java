@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class ThiefCard extends Card {
+public class ThiefCard extends ActionCard {
 
     public ThiefCard() {
         // Thief card settings
@@ -36,7 +36,7 @@ public class ThiefCard extends Card {
         }
 
         // 2. remove a random card from that player
-        Card removedCard = otherPlayer.removeRandomCard();
+        ActionCard removedCard = otherPlayer.removeRandomCard();
         if (removedCard == null) {
             System.out.println("Cannot steal from " + otherPlayer.getName() + " because they have no cards!");
         }

@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class AttackCard extends Card implements DealsDamage {
+public class AttackCard extends ActionCard implements DealsDamage {
 
     private int attackDamage;
 

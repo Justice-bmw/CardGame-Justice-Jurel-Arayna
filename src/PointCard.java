@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class PointCard extends Card {
+public class PointCard extends ActionCard {
 
     public PointCard() {
         // Point card settings

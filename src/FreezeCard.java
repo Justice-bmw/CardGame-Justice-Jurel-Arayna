@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class FreezeCard extends Card implements DealsDamage, AppliesFreeze {
+public class FreezeCard extends ActionCard implements DealsDamage, AppliesFreeze {
     private int damage; // amount of points subtracted from the target
 
     public FreezeCard() {

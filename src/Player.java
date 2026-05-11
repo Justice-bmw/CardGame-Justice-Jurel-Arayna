@@ -2,13 +2,13 @@ import java.util.ArrayList;
 
 public class Player {
     private String name;
-    private ArrayList<Card> hand;
+    private ArrayList<ActionCard> hand;
     private int numPoints;
     private boolean isFrozen;
 
     public Player(String name) {
         this.name = name;
-        hand = new ArrayList<Card>();
+        hand = new ArrayList<ActionCard>();
         numPoints = 5;
         isFrozen = false;
     }
@@ -16,7 +16,7 @@ public class Player {
     public void playRandomCardFromHand(ArrayList<Player> players) {
         // select a random card from our hand to play
         int randomCardIndex = Rand.randomInt(0, hand.size());
-        Card randomCard = hand.remove(randomCardIndex);
+        ActionCard randomCard = hand.remove(randomCardIndex);
         randomCard.play(this, players);
 
         // pick a random player (but not oneself) to apply any additional actions to
@@ -48,7 +48,7 @@ public class Player {
         return hand.size() > 0;
     }
 
-    public void addCardToHand(Card card) {
+    public void addCardToHand(ActionCard card) {
         hand.add(card);
     }
 
@@ -64,7 +64,7 @@ public class Player {
         isFrozen = false;
     }
 
-    public Card removeRandomCard() {
+    public ActionCard removeRandomCard() {
         if (hand.size() == 0) {
             return null; // returning null indicates there are no cards to remove
         }

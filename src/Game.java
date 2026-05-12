@@ -18,7 +18,7 @@ public class Game {
     private float freezeCardChances; // % chance (from 0-1) of generating a freeze card
     //private float thiefCardChances; // thief card chances are the leftovers of the other chances
 
-    private float chancesOfDamageCardBeingInDamageDeck; // % chance of a generated damage card being added to the damage-only deck
+    // private float chancesOfDamageCardBeingInDamageDeck; // % chance of a generated damage card being added to the damage-only deck
 
     // -------- End of Settings ------- //
 
@@ -27,8 +27,8 @@ public class Game {
 
     private ArrayList<Player> players;
     private ArrayList<Card> deck;
-    private ArrayList<ActionCard> mixedDeck; // contains a mix of all types of cards
-    private ArrayList<DealsDamage> damageDeck; // contains only cards that implement DealsDamage
+    // private ArrayList<ActionCard> mixedDeck; // contains a mix of all types of cards
+    // private ArrayList<DealsDamage> damageDeck; // contains only cards that implement DealsDamage
 
     // ------ End of Game Objects ----- //
 
@@ -52,13 +52,13 @@ public class Game {
         players.add(player);
     }
 
-    public ArrayList<ActionCard> getMixedDeck() {
-        return mixedDeck;
-    }
+    // public ArrayList<ActionCard> getMixedDeck() {
+    //     return mixedDeck;
+    // }
 
-    public ArrayList<DealsDamage> getDamageDeck() {
-        return damageDeck;
-    }
+    // public ArrayList<DealsDamage> getDamageDeck() {
+    //     return damageDeck;
+    // }
 
     public ArrayList<Card> getDeck() {
         return deck;
@@ -74,9 +74,8 @@ public class Game {
         int cardsAdded = 0;
         while (cardsAdded < startingHandSize) {
             for (int i = 0; i < players.size(); i++) {
-                int randomCardIndex = Rand.randomInt(0, mixedDeck.size());
-                ActionCard randomCard = mixedDeck.get(randomCardIndex);
-                mixedDeck.remove(randomCardIndex);
+                Card randomCard = deck.get(i);
+                deck.remove(i);
                 players.get(i).addCardToHand(randomCard);
             }
             cardsAdded += 1;
@@ -87,7 +86,8 @@ public class Game {
 
         // game loop -- loop as long as either deck has cards
 
-        while (mixedDeck.size() > 0 || damageDeck.size() > 0) {
+        // while (mixedDeck.size() > 0 || damageDeck.size() > 0) {
+        while (deck.size() > 0) {
 
             // switch to next player
             currentPlayerIndex += 1;
@@ -96,8 +96,9 @@ public class Game {
             }
             currentPlayer = players.get(currentPlayerIndex);
 
-            System.out.println("\n# cards remaining in Mixed deck: " + mixedDeck.size() + ".");
-            System.out.println("# cards remaining in Damage deck: " + damageDeck.size() + ".\n");
+            // System.out.println("\n# cards remaining in Mixed deck: " + mixedDeck.size() + ".");
+            // System.out.println("# cards remaining in Damage deck: " + damageDeck.size() + ".\n");
+            System.out.println("# cards remaining in deck:" + deck.size() + ".\n");
 
             System.out.println("It's " + currentPlayer.getName() + "'s turn.\n");
             currentPlayer.displayStatus();
@@ -119,8 +120,10 @@ public class Game {
             }
 
             // 2. OR draw a card from mixed deck (but don't play it yet)
-            else if (damageDeck.size() == 0 || (mixedDeck.size() > 0 && randomValue < playerChancesOfPlayingCard + playerChancesOfDrawingFromMixedDeck)) {
-                Object drawnObject = drawRandomCard(mixedDeck);
+            // else if (damageDeck.size() == 0 || (mixedDeck.size() > 0 && randomValue < playerChancesOfPlayingCard + playerChancesOfDrawingFromMixedDeck)) {
+            else if (deck.size() > 0 && randomValue < playerChancesOfPlayingCard) {
+                // Object drawnObject = drawRandomCard(mixedDeck);
+                Object drawnObject = drawRandomCard(deck);
                 ActionCard drawnCard = (ActionCard)drawnObject;
                 currentPlayer.addCardToHand(drawnCard);
 
@@ -129,28 +132,48 @@ public class Game {
 
             // 3. OR draw a card from damage deck and use its damage effect immediately, without getting points
             else {
-                Object drawnObject = drawRandomCard(damageDeck);
-                DealsDamage damageCard = (DealsDamage)drawnObject;
+                Object drawnObject = drawRandomCard(deck);
 
-                System.out.println(currentPlayer.getName() + " drew a " + damageCard + " from the Damage deck.");
+                if (drawnObject instanceof DealsDamage) {
+                    DealsDamage damageCard = (DealsDamage)drawnObject;
 
-                // pick a random player (but not oneself) to apply the damage card to
-                boolean selectedAnotherPlayer = false;
-                Player otherPlayer = null;
+                    boolean selectedAnotherPlayer = false;
+                    Player otherPlayer = null;
 
-                while (!selectedAnotherPlayer) {
-                    int randomPlayerIndex = Rand.randomInt(0, players.size());
-                    otherPlayer = players.get(randomPlayerIndex);
-                    if (otherPlayer != currentPlayer) {
-                        selectedAnotherPlayer = true;
+                    while (!selectedAnotherPlayer) {
+                        int randomPlayerIndex = Rand.randomInt(0, players.size());
+                        otherPlayer = players.get(randomPlayerIndex);
+                        if (otherPlayer != currentPlayer) {
+                            selectedAnotherPlayer = true;
+                        }
+                    }
+
+                    damageCard.doDamage(currentPlayer, otherPlayer);
+                    if (damageCard instanceof AppliesFreeze) {
+                        AppliesFreeze freezeCard = (AppliesFreeze)damageCard;
+                        freezeCard.freeze(currentPlayer, otherPlayer);
                     }
                 }
 
-                damageCard.doDamage(currentPlayer, otherPlayer);
-                if (damageCard instanceof AppliesFreeze) {
-                    AppliesFreeze freezeCard = (AppliesFreeze)damageCard;
-                    freezeCard.freeze(currentPlayer, otherPlayer);
-                }
+                // System.out.println(currentPlayer.getName() + " drew a " + damageCard + " from the Damage deck.");
+
+                // // pick a random player (but not oneself) to apply the damage card to
+                // boolean selectedAnotherPlayer = false;
+                // Player otherPlayer = null;
+
+                // while (!selectedAnotherPlayer) {
+                //     int randomPlayerIndex = Rand.randomInt(0, players.size());
+                //     otherPlayer = players.get(randomPlayerIndex);
+                //     if (otherPlayer != currentPlayer) {
+                //         selectedAnotherPlayer = true;
+                //     }
+                // }
+
+                // damageCard.doDamage(currentPlayer, otherPlayer);
+                // if (damageCard instanceof AppliesFreeze) {
+                //     AppliesFreeze freezeCard = (AppliesFreeze)damageCard;
+                //     freezeCard.freeze(currentPlayer, otherPlayer);
+                // }
             }
 
             Input.waitForUserToPressEnter("\nPress Enter to end " + currentPlayer.getName() + "'s turn.\n");
@@ -163,7 +186,7 @@ public class Game {
     // Randomly selects a reference (Card or DealsDamage) from an ArrayList (mixedDeck or damageDeck).
     // Removes the randomly selected reference from the specified ArrayList.
     // Returns the selected reference as an Object (because we don't know what type the ArrayList stores).
-    private Object drawRandomCard(ArrayList arrayList) {
+    private Object drawRandomCard(ArrayList<?> arrayList) {
         int randomCardIndex = Rand.randomInt(0, arrayList.size());
         Object randomCard = arrayList.remove(randomCardIndex);
         return randomCard;
@@ -183,7 +206,7 @@ public class Game {
 
         // Deck settings
         totalNumberOfCards = 20;
-        chancesOfDamageCardBeingInDamageDeck = 0.4f;
+        // chancesOfDamageCardBeingInDamageDeck = 0.4f;
 
         pointCardChances = 0.5f; // must be between 0 and 1
         attackCardChances = 0.25f; // must be between 0 and 1

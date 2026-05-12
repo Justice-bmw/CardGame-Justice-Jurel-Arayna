@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * A card that deals damage to another player.
  */
-public class AttackCard extends Card implements DealsDamage {
+public class AttackCard extends ActionCard implements DealsDamage {
 
     private int attackDamage;
 

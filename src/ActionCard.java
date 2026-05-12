@@ -6,15 +6,24 @@ import java.util.ArrayList;
  */
 public abstract class ActionCard extends Card {
 
+    private int pointValue;
+
     /**
-     * Creates an action card with a specific point value.
+     * Creates a card with a specific point value.
      */
     public ActionCard(int pointValue) {
-        super(pointValue);
+        this.pointValue = pointValue;
     }
 
     /**
-     * Runs the action card effect for the current player.
+     * Returns the number of points this card gives.
+     */
+    public int getPointValue() {
+        return pointValue;
+    }
+
+    /**
+     * Runs the effect of the card for the current player.
      */
     public abstract void play(Player currentPlayer, ArrayList<Player> allPlayers);
 }

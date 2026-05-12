@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class Player {
 
     private String name;
-    private ArrayList<ActionCard> hand;
+    private ArrayList<Card> hand;
     private int numPoints;
     private boolean isFrozen;
     private boolean hasCancelActive = false;
@@ -18,7 +18,7 @@ public class Player {
      */
     public Player(String name) {
         this.name = name;
-        this.hand = new ArrayList<ActionCard>();
+        this.hand = new ArrayList<Card>();
         this.numPoints = 5;
         this.isFrozen = false;
     }
@@ -28,7 +28,7 @@ public class Player {
      */
     public void playRandomCardFromHand(ArrayList<Player> players) {
         int randomCardIndex = Rand.randomInt(0, hand.size());
-        ActionCard randomCard = hand.remove(randomCardIndex);
+        ActionCard randomCard = (ActionCard)hand.remove(randomCardIndex);
 
         randomCard.play(this, players);
 
@@ -65,7 +65,7 @@ public class Player {
     /**
      * Adds one action card to the player's hand.
      */
-    public void addCardToHand(ActionCard card) {
+    public void addCardToHand(Card card) {
         hand.add(card);
     }
 
@@ -100,7 +100,7 @@ public class Player {
         }
 
         int randomCardIndex = Rand.randomInt(0, hand.size());
-        return hand.remove(randomCardIndex);
+        return (ActionCard)hand.remove(randomCardIndex);
     }
 
     /**

@@ -8,17 +8,20 @@ public class Game {
     private int startingHandSize;
 
     private float playerChancesOfPlayingCard; // % chance (0-1) that a player plays a card from their hand
-    private float playerChancesOfDrawingFromMixedDeck; // % chance (0-1) that a player draws from the mixed deck
-    // private float playerChancesOfDrawingFromDamageDeck; // damage deck chances are the leftovers of the other chances
 
     // Deck settings
     private int totalNumberOfCards;
     private float pointCardChances; // % chance (from 0-1) of generating a point card
     private float attackCardChances; // % chance (from 0-1) of generating an attack card
     private float freezeCardChances; // % chance (from 0-1) of generating a freeze card
-    //private float thiefCardChances; // thief card chances are the leftovers of the other chances
-
-    // private float chancesOfDamageCardBeingInDamageDeck; // % chance of a generated damage card being added to the damage-only deck
+    private float thiefCardChances; // thief card chances are the leftovers of the other chance
+    private float futureCardChances;
+    private float jokerCardChances;
+    private float defenseCardChances;
+    private float cancelCardChances;
+    private float skipCardChances;
+    private float chaosCardChances;
+    private float weightedChance;
 
     // -------- End of Settings ------- //
 
@@ -27,8 +30,6 @@ public class Game {
 
     private ArrayList<Player> players;
     private ArrayList<Card> deck;
-    // private ArrayList<ActionCard> mixedDeck; // contains a mix of all types of cards
-    // private ArrayList<DealsDamage> damageDeck; // contains only cards that implement DealsDamage
 
     // ------ End of Game Objects ----- //
 
@@ -51,14 +52,6 @@ public class Game {
     public void registerPlayer(Player player) {
         players.add(player);
     }
-
-    // public ArrayList<ActionCard> getMixedDeck() {
-    //     return mixedDeck;
-    // }
-
-    // public ArrayList<DealsDamage> getDamageDeck() {
-    //     return damageDeck;
-    // }
 
     public ArrayList<Card> getDeck() {
         return deck;
@@ -86,7 +79,6 @@ public class Game {
 
         // game loop -- loop as long as either deck has cards
 
-        // while (mixedDeck.size() > 0 || damageDeck.size() > 0) {
         while (deck.size() > 0) {
 
             // switch to next player
@@ -96,8 +88,6 @@ public class Game {
             }
             currentPlayer = players.get(currentPlayerIndex);
 
-            // System.out.println("\n# cards remaining in Mixed deck: " + mixedDeck.size() + ".");
-            // System.out.println("# cards remaining in Damage deck: " + damageDeck.size() + ".\n");
             System.out.println("# cards remaining in deck:" + deck.size() + ".\n");
 
             System.out.println("It's " + currentPlayer.getName() + "'s turn.\n");
@@ -137,9 +127,7 @@ public class Game {
             }
 
             // 2. OR draw a card from mixed deck (but don't play it yet)
-            // else if (damageDeck.size() == 0 || (mixedDeck.size() > 0 && randomValue < playerChancesOfPlayingCard + playerChancesOfDrawingFromMixedDeck)) {
             else if (deck.size() > 0 && randomValue < playerChancesOfPlayingCard) {
-                // Object drawnObject = drawRandomCard(mixedDeck);
                 Object drawnObject = drawRandomCard(deck);
                 ActionCard drawnCard = (ActionCard)drawnObject;
                 currentPlayer.addCardToHand(drawnCard);
@@ -164,6 +152,10 @@ public class Game {
                             selectedAnotherPlayer = true;
                         }
                     }
+                    if (drawnObject instanceof ChaosCard) {
+                        ((ActionCard)drawnObject).play(currentPlayer, players);
+                    }
+
 
                     damageCard.doDamage(currentPlayer, otherPlayer);
                     if (damageCard instanceof AppliesFreeze) {
@@ -171,26 +163,6 @@ public class Game {
                         freezeCard.freeze(currentPlayer, otherPlayer);
                     }
                 }
-
-                // System.out.println(currentPlayer.getName() + " drew a " + damageCard + " from the Damage deck.");
-
-                // // pick a random player (but not oneself) to apply the damage card to
-                // boolean selectedAnotherPlayer = false;
-                // Player otherPlayer = null;
-
-                // while (!selectedAnotherPlayer) {
-                //     int randomPlayerIndex = Rand.randomInt(0, players.size());
-                //     otherPlayer = players.get(randomPlayerIndex);
-                //     if (otherPlayer != currentPlayer) {
-                //         selectedAnotherPlayer = true;
-                //     }
-                // }
-
-                // damageCard.doDamage(currentPlayer, otherPlayer);
-                // if (damageCard instanceof AppliesFreeze) {
-                //     AppliesFreeze freezeCard = (AppliesFreeze)damageCard;
-                //     freezeCard.freeze(currentPlayer, otherPlayer);
-                // }
             }
 
             Input.waitForUserToPressEnter("\nPress Enter to end " + currentPlayer.getName() + "'s turn.\n");
@@ -214,70 +186,90 @@ public class Game {
         // Player settings
         startingHandSize = 3;
         playerChancesOfPlayingCard = 0.5f; // 50% play card, 25% draw card from mixed, 25% draw card from damage deck and play immediately
-        playerChancesOfDrawingFromMixedDeck = 0.25f;
-        float playerChancesOfDrawingFromDamageDeck = 1f - (playerChancesOfPlayingCard + playerChancesOfDrawingFromMixedDeck);
-        if (playerChancesOfDrawingFromDamageDeck < 0f) {
-            System.out.println("ERROR: Chances of different player actions are not all positive.");
-        }
-
 
         // Deck settings
-        totalNumberOfCards = 20;
-        // chancesOfDamageCardBeingInDamageDeck = 0.4f;
+        totalNumberOfCards = 40;
 
-        pointCardChances = 0.5f; // must be between 0 and 1
-        attackCardChances = 0.25f; // must be between 0 and 1
-        freezeCardChances = 0.15f; // must be between 0 and 1
+        weightedChance = 1.47f;
 
-        // thief card chances should be positive based on the math, but check just to be safe
-        float thiefCardChances = 1f - (pointCardChances + attackCardChances + freezeCardChances);
-        if (thiefCardChances < 0f) {
-            System.out.println("ERROR: Card chances are not all positive.");
-        }
+        pointCardChances = 0.4f;
+        chaosCardChances = 0.3f;
+        defenseCardChances = 0.2f;
+        cancelCardChances = 0.2f;
+        futureCardChances = 0.2f;
+        attackCardChances = 0.15f;
+        freezeCardChances = 0.12f;
+        thiefCardChances = 0.1f;
+        jokerCardChances = 0.1f;
+        skipCardChances = 0.1f;
     }
 
-    // Populates the two ArrayLists with random Cards, according to the settings.
     private void generateDecks() {
         for (int i = 0; i < totalNumberOfCards; i++) {
 
-            float randomValue = Rand.random(); // 0.0 -> 0.999...
+            float randomValue = Rand.randomFloat(0, weightedChance); 
+
+            // Going up and down chance, if multiple cards have the same chance, they have a secondary chance, around the same between all.
 
             // % chance of creating a point card
-            if (randomValue < pointCardChances) {
-                // mixedDeck.add(new PointCard());
+            if (randomValue <= pointCardChances) {
                 deck.add(new PointCard());
             }
 
             // % chance of creating an attack card
-            else if (randomValue < pointCardChances + attackCardChances) {
-                AttackCard newAttackCard = new AttackCard();
+            else if (randomValue <= pointCardChances + chaosCardChances) {
+                ChaosCard newChaosCard = new ChaosCard();
 
-                // if (Rand.random() < chancesOfDamageCardBeingInDamageDeck) {
-                //     damageDeck.add(newAttackCard);
-                // } else {
-                //     mixedDeck.add(newAttackCard);
-                // }
+                deck.add(newChaosCard);
+            }
+
+            // % chance of creating a freeze card
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances) {
+                DefenseCard newDefenseCard = new DefenseCard();
+
+                deck.add(newDefenseCard);
+            }
+
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances) {
+                CancelCard newCancelCard = new CancelCard();
+
+                deck.add(newCancelCard);
+            }
+
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances) {
+                CancelCard newCancelCard = new CancelCard();
+
+                deck.add(newCancelCard);
+            }
+
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances + attackCardChances) {
+                AttackCard newAttackCard = new AttackCard();
 
                 deck.add(newAttackCard);
             }
 
-            // % chance of creating a freeze card
-            else if (randomValue < pointCardChances + attackCardChances + freezeCardChances) {
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances + attackCardChances + freezeCardChances) {
                 FreezeCard newFreezeCard = new FreezeCard();
-
-                // if (Rand.random() < chancesOfDamageCardBeingInDamageDeck) {
-                //     damageDeck.add(newFreezeCard);
-                // } else {
-                //     mixedDeck.add(newFreezeCard);
-                // }
 
                 deck.add(newFreezeCard);
             }
 
-            // % chance of creating a thief card
-            else {
-                // mixedDeck.add(new ThiefCard());
-                deck.add(new ThiefCard());
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances + attackCardChances + freezeCardChances + thiefCardChances) {
+                ThiefCard newThiefCard = new ThiefCard();
+
+                deck.add(newThiefCard);
+            }
+            
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances + attackCardChances + freezeCardChances + thiefCardChances + jokerCardChances) {
+                JokerCard newJokerCard = new JokerCard();
+
+                deck.add(newJokerCard);
+            }
+
+            else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances + attackCardChances + freezeCardChances + thiefCardChances + jokerCardChances + skipCardChances) {
+                SkipCard newSkipCard = new SkipCard();
+
+                deck.add(newSkipCard);
             }
         }
     }

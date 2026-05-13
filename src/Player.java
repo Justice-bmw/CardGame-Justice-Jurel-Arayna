@@ -11,6 +11,7 @@ public class Player {
     private int numPoints;
     private boolean isFrozen;
     private boolean hasCancelActive = false;
+    private boolean skipped;
 
     /**
      * Creates a player with the given name.
@@ -21,38 +22,22 @@ public class Player {
         this.hand = new ArrayList<Card>();
         this.numPoints = 5;
         this.isFrozen = false;
+        this.skipped = false;
     }
 
     /**
      * Removes a random action card from the hand and plays it.
      */
     public void playRandomCardFromHand(ArrayList<Player> players) {
+
+        // Select a random card from the hand
         int randomCardIndex = Rand.randomInt(0, hand.size());
+
+        // Remove the selected card from the hand
         ActionCard randomCard = (ActionCard)hand.remove(randomCardIndex);
 
+        // Play the card
         randomCard.play(this, players);
-
-        boolean selectedAnotherPlayer = false;
-        Player otherPlayer = null;
-
-        while (!selectedAnotherPlayer) {
-            int randomPlayerIndex = Rand.randomInt(0, players.size());
-            otherPlayer = players.get(randomPlayerIndex);
-
-            if (otherPlayer != this) {
-                selectedAnotherPlayer = true;
-            }
-        }
-
-        if (randomCard instanceof DealsDamage) {
-            DealsDamage damageCard = (DealsDamage) randomCard;
-            damageCard.doDamage(this, otherPlayer);
-        }
-
-        if (randomCard instanceof AppliesFreeze) {
-            AppliesFreeze freezeCard = (AppliesFreeze) randomCard;
-            freezeCard.freeze(this, otherPlayer);
-        }
     }
 
     /**
@@ -147,6 +132,10 @@ public class Player {
             System.out.println(" | *FROZEN*");
         }
 
+        if (skipped) {
+            System.out.println(" | *SKIP NEXT TURN*");
+        }
+
         System.out.println(" | Cards in hand:");
 
         for (int i = 0; i < hand.size(); i++) {
@@ -174,5 +163,17 @@ public class Player {
             return true;
         }
         return false;
+    }
+
+    public void skipTurn() {
+        skipped = true;
+    }
+
+    public boolean isSkipped() {
+        return skipped;
+    }
+
+    public void unskipTurn() {
+        skipped = false;
     }
 }

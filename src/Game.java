@@ -104,11 +104,28 @@ public class Game {
             currentPlayer.displayStatus();
             Input.waitForUserToPressEnter("\nPress Enter to play " + currentPlayer.getName() + "'s turn.");
 
-            // check if the player should be skipped
+            // Check if the player is frozen
             if (currentPlayer.isFrozen()) {
-                System.out.println(currentPlayer.getName() + " is frozen! Skipping turn.");
+
+                System.out.println(currentPlayer.getName()
+                        + " is frozen! Skipping turn.");
+
+                // Remove frozen effect after skipping one turn
                 currentPlayer.unfreeze();
-                continue; // skips the rest of the body of the loop, and returns to the start of the loop
+
+                continue;
+            }
+
+// Check if the player must skip their turn
+            if (currentPlayer.isSkipped()) {
+
+                System.out.println(currentPlayer.getName()
+                        + " skipped their turn!");
+
+                // Remove skip effect after one skipped turn
+                currentPlayer.unskipTurn();
+
+                continue;
             }
 
             // generate a random value to choose a random action

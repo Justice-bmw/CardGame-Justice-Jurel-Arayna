@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-// Card that allows a player to skip their own next turn.
+// Card that allows a player to skip their own next turn. (Made by Justice)
 public class SkipCard extends ActionCard implements SkipsTurn {
 
     /**

@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-// A very dangerous card that immediately damages the player who draws or plays it.
+// A very dangerous card that immediately damages the player who draws or plays it. (Made my Justice)
 // The amount of damage is determined by rolling a six-sided die.
 
 public class ChaosCard extends ActionCard implements DealsDamage {

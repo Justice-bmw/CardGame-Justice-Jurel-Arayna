@@ -1,3 +1,3 @@
-public class JokerCard {
+public class JokerCard extends Card {
     
 }

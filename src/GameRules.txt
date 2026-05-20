@@ -1,0 +1,29 @@
+The goal of the game is to be the Player with the most points when the game ends.
+Each player starts with 5 points. Points can increase and decrease as the game progresses, but cannot be negative.
+The game ends when there are no cards remaining in any draw piles.
+
+Players gain and lose points by playing cards. Different types of cards increase/decrease points differently and may affect other players.
+
+There are 10 types of cards:
+-- Point card: The Player who plays it gains points (6-10 points).
+-- Attack card: Reduces points of another player (by 5-8 points). The Player who plays it also gains points (3-4 points).
+-- Freeze card: Freezes another player for one turn. Also reduces the other Player's points (by 4-6 points) The Player who plays it also gains points (1-2 points).
+-- Thief card: The Player who plays it steals a card from another Player and places it in their hand. Costs 1 point to play.
+-- Skip Card: End your turn immediately. You gain 1–2 points.
+-- Shield Card: Play this when another player attacks you to reduce the damage you take.
+-- Nope Card: Cancel the effect of another player’s ability card. A Nope Card can also cancel another Nope Card. Costs 1–2 points to play.
+-- Joker Card: Choose another player. That player draws 2 cards and skips their next turn.
+-- Terrorist Card: When drawn, the player who drew it loses 5–8 points.
+-- See the Future Card: Look at the top 3 cards of a deck without drawing them.
+
+Players start with 3 random cards in hand. The remaining cards start in one deck:
+-- the Mixed Deck that contains a mixture of all card types
+
+Each turn, a Player can choose one of 2 options:
+-- 1. Play a card from their hand
+-- 2. Draw a random card from the Mixed Deck. They do not get to play it.
+
+
+
+
+

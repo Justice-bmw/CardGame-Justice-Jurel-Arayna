@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /**
  * A card that deals damage to another player.
  */
-public class AttackCard extends Card implements DealsDamage {
+public class AttackCard extends ActionCard implements DealsDamage {
 
     private int attackDamage;
 
@@ -22,7 +22,7 @@ public class AttackCard extends Card implements DealsDamage {
      * Gives points to the current player and attacks one other player.
      */
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
         currentPlayer.addPoints(getPointValue());
 
         System.out.println(currentPlayer.getName() + " played " + this);

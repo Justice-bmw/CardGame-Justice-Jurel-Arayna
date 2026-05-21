@@ -1,23 +1,23 @@
 import java.util.ArrayList;
 
-/**
- * A card that cancels the next incoming card effect used against a player.
+/*
+ * A card that cancels the next incoming card effect used.
  */
 public class CancelCard extends ActionCard implements AppliesCancel {
 
-    /**
+    /*
      * Creates a cancel card.
      * This card has a fixed point value of negative one.
      */
     public CancelCard() {
-        super(-1);
+        super(0);
     }
 
-    /**
+    /*
      * Gives points to the current player and activates the cancel effect.
      */
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
         currentPlayer.addPoints(getPointValue());
 
         System.out.println(currentPlayer.getName() + " played " + this);
@@ -34,7 +34,7 @@ public class CancelCard extends ActionCard implements AppliesCancel {
      */
     @Override
     public void cancelCardEffect(Player currentPlayer) {
-        currentPlayer.activateCancel();
+        // No extra action is needed here.
     }
 
     /**
@@ -42,6 +42,6 @@ public class CancelCard extends ActionCard implements AppliesCancel {
      */
     @Override
     public String toString() {
-        return "Cancel Card { point value: " + getPointValue() + "}";
+        return "Cancel Card { point value: " + getPointValue() + " }";
     }
 }

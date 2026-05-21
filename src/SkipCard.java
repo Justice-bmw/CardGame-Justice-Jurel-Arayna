@@ -17,7 +17,7 @@ public class SkipCard extends ActionCard implements SkipsTurn {
      * Gives points to the current player and makes them skip their next turn.
      */
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
         // Give the player the points from this card
         currentPlayer.addPoints(getPointValue());
 

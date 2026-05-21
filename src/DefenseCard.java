@@ -19,7 +19,7 @@ public class DefenseCard extends ActionCard implements AppliesDefense {
      * Gives points to the current player and then applies the defense effect.
      */
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
         currentPlayer.addPoints(getPointValue());
 
         System.out.println(currentPlayer.getName() + " played " + this);
@@ -31,14 +31,14 @@ public class DefenseCard extends ActionCard implements AppliesDefense {
             return;
         }
 
-        defense(currentPlayer);
+        defendPlayer(currentPlayer);
     }
 
     /**
      * Gives the chosen player the defense points from this card.
      */
     @Override
-    public void defense(Player playerToDefend) {
+    public void defendPlayer(Player playerToDefend) {
         playerToDefend.addPoints(defensePoints);
         System.out.println(playerToDefend.getName() + " defended and gained " + defensePoints + " points.");
         System.out.println(playerToDefend.getName() + " now has " + playerToDefend.getNumPoints() + " points.\n");
@@ -49,6 +49,6 @@ public class DefenseCard extends ActionCard implements AppliesDefense {
      */
     @Override
     public String toString() {
-        return "Defense Card { point value: " + getPointValue() + ", defense: " + defensePoints + "}";
+        return "Defense Card { point value: " + getPointValue() + ", defense: " + defensePoints + " }";
     }
 }

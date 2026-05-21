@@ -17,7 +17,7 @@ public class FreezeCard extends ActionCard implements AppliesFreeze {
      * Gives points to the current player and freezes another player.
      */
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
 
         // Give the current player the card's point value
         currentPlayer.addPoints(getPointValue());

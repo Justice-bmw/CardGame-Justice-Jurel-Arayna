@@ -42,8 +42,6 @@ public class Game {
         // Game objects
         players = new ArrayList<Player>();
         deck = new ArrayList<Card>();
-        // mixedDeck = new ArrayList<ActionCard>();
-        // damageDeck = new ArrayList<DealsDamage>();
 
         // Generate the decks
         generateDecks();
@@ -63,12 +61,25 @@ public class Game {
 
     public void run() {
 
-        // deal cards to each player
+        // deal cards to each player, skipping ChaosCards
         int cardsAdded = 0;
         while (cardsAdded < startingHandSize) {
             for (int i = 0; i < players.size(); i++) {
-                Card randomCard = deck.get(i);
-                deck.remove(i);
+                Card randomCard = null;
+
+                // Keep drawing until we find a non-ChaosCard
+                while (randomCard == null || randomCard instanceof ChaosCard) {
+                    int randomIndex = Rand.randomInt(0, deck.size());
+                    randomCard = deck.remove(randomIndex);
+
+                    // If it was a ChaosCard, put it at the bottom of the deck instead
+                    if (randomCard instanceof ChaosCard) {
+                        System.out.println("(ChaosCard skipped during deal — returned to deck.)");
+                        deck.add(0, randomCard);
+                        randomCard = null;
+                    }
+                }
+
                 players.get(i).addCardToHand(randomCard);
             }
             cardsAdded += 1;
@@ -91,8 +102,14 @@ public class Game {
             System.out.println("# cards remaining in deck:" + deck.size() + ".\n");
 
             System.out.println("It's " + currentPlayer.getName() + "'s turn.\n");
-            currentPlayer.displayStatus();
-            Input.waitForUserToPressEnter("\nPress Enter to play " + currentPlayer.getName() + "'s turn.");
+
+            // Only show status and prompt for CPU turns; human sees their hand inside playRandomCardFromHand
+            if (!(currentPlayer instanceof HumanPlayer)) {
+                currentPlayer.displayStatus();
+                Input.waitForUserToPressEnter("\nPress Enter to play " + currentPlayer.getName() + "'s turn.");
+            } else {
+                currentPlayer.displayStatus();
+            }
 
             // Check if the player is frozen
             if (currentPlayer.isFrozen()) {
@@ -106,7 +123,7 @@ public class Game {
                 continue;
             }
 
-// Check if the player must skip their turn
+            // Check if the player must skip their turn
             if (currentPlayer.isSkipped()) {
 
                 System.out.println(currentPlayer.getName()
@@ -118,67 +135,52 @@ public class Game {
                 continue;
             }
 
-            // generate a random value to choose a random action
-            float randomValue = Rand.random();
+            // Every player draws a card at the start of their turn
+            if (deck.size() > 0) {
+                Card drawnCard = (Card) drawCard(deck);
 
-            // 1. play a card from player's hand
-            if (randomValue < playerChancesOfPlayingCard && currentPlayer.hasCardsInHand()) {
-                currentPlayer.playRandomCardFromHand(players);
-            }
-
-            // 2. OR draw a card from mixed deck (but don't play it yet)
-            else if (deck.size() > 0 && randomValue < playerChancesOfPlayingCard) {
-                Object drawnObject = drawRandomCard(deck);
-                ActionCard drawnCard = (ActionCard)drawnObject;
-                currentPlayer.addCardToHand(drawnCard);
-
-                System.out.println(currentPlayer.getName() + " drew a " + drawnCard + " from the Mixed deck.");
-            }
-
-            // 3. OR draw a card from damage deck and use its damage effect immediately, without getting points
-            else {
-                Object drawnObject = drawRandomCard(deck);
-
-                if (drawnObject instanceof DealsDamage) {
-                    DealsDamage damageCard = (DealsDamage)drawnObject;
-
-                    boolean selectedAnotherPlayer = false;
-                    Player otherPlayer = null;
-
-                    while (!selectedAnotherPlayer) {
-                        int randomPlayerIndex = Rand.randomInt(0, players.size());
-                        otherPlayer = players.get(randomPlayerIndex);
-                        if (otherPlayer != currentPlayer) {
-                            selectedAnotherPlayer = true;
-                        }
-                    }
-                    if (drawnObject instanceof ChaosCard) {
-                        ((ActionCard)drawnObject).play(currentPlayer, players);
-                    }
-
-
-                    damageCard.doDamage(currentPlayer, otherPlayer);
-                    if (damageCard instanceof AppliesFreeze) {
-                        AppliesFreeze freezeCard = (AppliesFreeze)damageCard;
-                        freezeCard.freeze(currentPlayer, otherPlayer);
+                // ChaosCard triggers immediately on draw — never goes to hand
+                if (drawnCard instanceof ChaosCard) {
+                    System.out.println(currentPlayer.getName() + " drew a " + drawnCard + " — it triggers instantly!");
+                    ActionCard temp = (ActionCard) drawnCard;
+                    temp.play(currentPlayer, players, deck);
+                } else {
+                    currentPlayer.addCardToHand(drawnCard);
+                    if (currentPlayer instanceof HumanPlayer) {
+                        System.out.println(currentPlayer.getName() + " drew a " + drawnCard + " from the deck.");
                     }
                 }
             }
 
-            Input.waitForUserToPressEnter("\nPress Enter to end " + currentPlayer.getName() + "'s turn.\n");
+            // Human players always get to choose what to play
+            if (currentPlayer instanceof HumanPlayer) {
+                if (currentPlayer.hasCardsInHand()) {
+                    currentPlayer.playRandomCardFromHand(players, deck);
+                }
+            }
+
+            // CPU players randomly decide whether to play a card
+            else {
+                float randomValue = Rand.random();
+
+                if (randomValue < playerChancesOfPlayingCard && currentPlayer.hasCardsInHand()) {
+                    currentPlayer.playRandomCardFromHand(players, deck);
+                }
+            }
+
+
         }
 
         // End game: determine which Player had the most points
         declareWinner();
     }
 
-    // Randomly selects a reference (Card or DealsDamage) from an ArrayList (mixedDeck or damageDeck).
     // Removes the randomly selected reference from the specified ArrayList.
     // Returns the selected reference as an Object (because we don't know what type the ArrayList stores).
-    private Object drawRandomCard(ArrayList<?> arrayList) {
-        int randomCardIndex = Rand.randomInt(0, arrayList.size());
-        Object randomCard = arrayList.remove(randomCardIndex);
-        return randomCard;
+    public Object drawCard(ArrayList<?> arrayList) {
+        Card drawnCard = deck.get(0);
+        deck.remove(drawnCard);
+        return drawnCard;
     }
 
     // Initializes the settings fields.
@@ -190,24 +192,26 @@ public class Game {
         // Deck settings
         totalNumberOfCards = 40;
 
-        weightedChance = 1.47f;
+        weightedChance = 2.37f;
 
         pointCardChances = 0.4f;
         chaosCardChances = 0.3f;
         defenseCardChances = 0.2f;
         cancelCardChances = 0.2f;
-        futureCardChances = 0.2f;
+        futureCardChances = 0.4f;
         attackCardChances = 0.15f;
         freezeCardChances = 0.12f;
-        thiefCardChances = 0.1f;
-        jokerCardChances = 0.1f;
-        skipCardChances = 0.1f;
+        thiefCardChances = 0.4f;
+        jokerCardChances = 0.4f;
+        skipCardChances = 0.4f;
     }
 
     private void generateDecks() {
         for (int i = 0; i < totalNumberOfCards; i++) {
 
-            float randomValue = Rand.randomFloat(0, weightedChance); 
+            
+
+            float randomValue = Rand.randomFloat(0, weightedChance);
 
             // Going up and down chance, if multiple cards have the same chance, they have a secondary chance, around the same between all.
 
@@ -237,9 +241,9 @@ public class Game {
             }
 
             else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances) {
-                CancelCard newCancelCard = new CancelCard();
+                FutureCard newFutureCard = new FutureCard();
 
-                deck.add(newCancelCard);
+                deck.add(newFutureCard);
             }
 
             else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances + attackCardChances) {
@@ -259,7 +263,7 @@ public class Game {
 
                 deck.add(newThiefCard);
             }
-            
+
             else if (randomValue <= pointCardChances + chaosCardChances + defenseCardChances + cancelCardChances + futureCardChances + attackCardChances + freezeCardChances + thiefCardChances + jokerCardChances) {
                 JokerCard newJokerCard = new JokerCard();
 

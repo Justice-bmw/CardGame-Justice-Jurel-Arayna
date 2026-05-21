@@ -16,7 +16,7 @@ public class ThiefCard extends ActionCard {
      * Gives points to the current player and steals a card from another player.
      */
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
 
         // Give the current player the card's point value
         currentPlayer.addPoints(getPointValue());
@@ -53,7 +53,7 @@ public class ThiefCard extends ActionCard {
         }
 
         // Remove a random card from the target player
-        ActionCard stolenCard = otherPlayer.removeRandomCard();
+        Card stolenCard = otherPlayer.removeRandomCard();
 
         // Add the stolen card to the current player's hand
         currentPlayer.addCardToHand(stolenCard);

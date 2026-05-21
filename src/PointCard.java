@@ -13,7 +13,7 @@ public class PointCard extends ActionCard {
     }
 
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
         currentPlayer.addPoints(super.getPointValue());
 
         System.out.println(currentPlayer.getName() + " played " + this);

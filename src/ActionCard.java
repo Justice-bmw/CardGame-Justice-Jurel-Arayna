@@ -25,5 +25,6 @@ public abstract class ActionCard extends Card {
     /**
      * Runs the effect of the card for the current player.
      */
-    public abstract void play(Player currentPlayer, ArrayList<Player> allPlayers);
+    
+    public abstract void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck);
 }

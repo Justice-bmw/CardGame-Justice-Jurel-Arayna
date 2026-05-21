@@ -32,10 +32,9 @@ public class ChaosCard extends ActionCard implements DealsDamage {
      * The current player immediately takes damage.
      */
     @Override
-    public void play(Player currentPlayer, ArrayList<Player> allPlayers) {
+    public void play(Player currentPlayer, ArrayList<Player> allPlayers, ArrayList<Card> deck) {
 
-        System.out.println(currentPlayer.getName()
-                + " played " + this);
+        System.out.println(currentPlayer.getName() + " played " + this);
 
         // Damage the current player
         doDamage(currentPlayer, currentPlayer);

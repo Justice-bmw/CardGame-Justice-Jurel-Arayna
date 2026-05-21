@@ -28,7 +28,7 @@ public class Player {
     /**
      * Removes a random action card from the hand and plays it.
      */
-    public void playRandomCardFromHand(ArrayList<Player> players) {
+    public void playRandomCardFromHand(ArrayList<Player> players, ArrayList<Card> deck) {
 
         // Select a random card from the hand
         int randomCardIndex = Rand.randomInt(0, hand.size());
@@ -37,7 +37,7 @@ public class Player {
         ActionCard randomCard = (ActionCard)hand.remove(randomCardIndex);
 
         // Play the card
-        randomCard.play(this, players);
+        randomCard.play(this, players, deck);
     }
 
     /**
@@ -74,18 +74,18 @@ public class Player {
     public void unfreeze() {
         isFrozen = false;
     }
-
+// No extra action is needed here.
     /**
      * Removes and returns one random card from the hand.
      * Returns null when the hand is empty.
      */
-    public ActionCard removeRandomCard() {
+    public Card removeRandomCard() {
         if (hand.size() == 0) {
             return null;
         }
 
         int randomCardIndex = Rand.randomInt(0, hand.size());
-        return (ActionCard)hand.remove(randomCardIndex);
+        return hand.remove(randomCardIndex);
     }
 
     /**
@@ -175,5 +175,20 @@ public class Player {
 
     public void unskipTurn() {
         skipped = false;
+    }
+
+    // Returns how many cards are in hand
+    public int handSize() {
+    return hand.size();
+    }
+
+    // Peeks at a card by index without removing it
+    public Card peekCard(int index) {
+    return (Card) hand.get(index);
+    }
+
+    // Removes and returns a card at a specific index
+    public Card removeCardAt(int index) {
+    return (Card) hand.remove(index);
     }
 }
